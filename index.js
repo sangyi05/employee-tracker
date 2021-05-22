@@ -139,4 +139,117 @@ const addRole = () => {
                 )
             })
     })
-}
+};
+
+const addEmployee = () => {
+    connection.query(
+        "SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employee",
+        (err, employeeRes) => {
+            connection.query("SELECT id, title AS name FROM role", (err, roleRes) => {
+                inquierer
+                    .prompt([
+                        {
+                            type: "input",
+                            name: "firstName",
+                            message: "What is the employee's first name?"
+                        },
+                        {
+                            type: "input",
+                            name: "lastName",
+                            message: "What is the employee's last name?"
+                        }, 
+                        {
+                            type: "list",
+                            choices: roleRes, 
+                            name: "role",
+                            message: "what is the employee's role?"
+                        },
+                        {
+                            type: "list",
+                            choices: employeeRes,
+                            name: "manager",
+                            message: "Who is the employee's manager?"
+                        }
+                    ])
+                    .then((answer) => {
+                        const roleMatch = roleRes.find((role) => {
+                            return role.name === answer.role;
+                        });
+
+                        const employeeMatch = employeeRes.find((employee) =>{
+                            return employee.name === answer.manager
+                        });
+
+                        connection.query(
+                            "INSERT INTO employee set ?",
+                            {
+                                first_name: answer.firstName,
+                                last_name: answer.lastName,
+                                role_id: roleMatch.id,
+                                manager_id: employeeMatch.id
+                            },
+                            (err, res) => {
+                                if (err) throw err;
+                                console.log("Done!");
+                                openingPrompts()
+                            }
+                        )
+                    })
+            })
+        }
+    )
+};
+
+const updateEmployee = () => {
+    connection.query(
+        "SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employee",
+        (err, employeeRes) => {
+            connection.query("SELECT id, title as name FROM role", (err, roleRes) => {
+                inquirer
+                    .prompt([
+                        {
+                            type: "list",
+                            choices: employeeRes,
+                            nane: "employeeList",
+                            message: "Select the employee you would like to update."
+                        },
+                        {
+                            type: "list",
+                            choices: roleRes,
+                            name: "roleList",
+                            message: "What is this employee's role?"
+                        },
+                    ])
+                    .then((answer) => {
+                        const roleMatch = roleRes.find((role) => {
+                            return role.name === answer.roleList;
+                        });
+
+                        const employeeMatch = employeeRes.find((employee) => {
+                            return employee.name === answer.employeeList;
+                        })
+                        console.log(employeeMatch);
+                        connection.query(
+                            "UPDATE employee set ? WHERE?"
+                            [
+                                {
+                                    ROLE_ID: roleMatch.id
+                                },
+                                {
+                                    ID: employeeMatch.ID
+                                }
+                            ], 
+                            (err, res) => {
+                                if (err) throw err;
+                                console.log(res);
+                                console.log("Done!")
+                                openingPrompts()
+                            }
+                        )
+                    })
+            })
+        }
+    )
+};
+
+openingPrompts()
