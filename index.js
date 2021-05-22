@@ -86,7 +86,7 @@ const addDepartment = () => {
                 message: "What is the name of the department?",
             },
         ])
-        .then((anser) => {
+        .then((answer) => {
             connection.query(
                 "INSERT INTO department set ?",
                 { name: answer.name },
@@ -114,14 +114,14 @@ const addRole = () => {
                 },
                 {
                     type: "list",
-                    choices: res, 
+                    choices: res,
                     name: "department",
                     message: "What department does this role belong in?"
                 }
             ])
-            .then((answers) => {
+            .then((answer) => {
                 const match = res.find((department) => {
-                    return department.name ===answer.department;
+                    return department.name === answer.department;
                 });
                 connection.query(
                     "INSERT INTO role set ?",
@@ -146,7 +146,7 @@ const addEmployee = () => {
         "SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employee",
         (err, employeeRes) => {
             connection.query("SELECT id, title AS name FROM role", (err, roleRes) => {
-                inquierer
+                inquirer
                     .prompt([
                         {
                             type: "input",
@@ -157,10 +157,10 @@ const addEmployee = () => {
                             type: "input",
                             name: "lastName",
                             message: "What is the employee's last name?"
-                        }, 
+                        },
                         {
                             type: "list",
-                            choices: roleRes, 
+                            choices: roleRes,
                             name: "role",
                             message: "what is the employee's role?"
                         },
@@ -176,7 +176,7 @@ const addEmployee = () => {
                             return role.name === answer.role;
                         });
 
-                        const employeeMatch = employeeRes.find((employee) =>{
+                        const employeeMatch = employeeRes.find((employee) => {
                             return employee.name === answer.manager
                         });
 
@@ -204,20 +204,20 @@ const updateEmployee = () => {
     connection.query(
         "SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employee",
         (err, employeeRes) => {
-            connection.query("SELECT id, title as name FROM role", (err, roleRes) => {
+            connection.query("SELECT id, title AS name FROM role", (err, roleRes) => {
                 inquirer
                     .prompt([
                         {
                             type: "list",
                             choices: employeeRes,
-                            nane: "employeeList",
-                            message: "Select the employee you would like to update."
+                            name: "employeeList",
+                            message: "Select the employee you would like to update?",
                         },
                         {
                             type: "list",
                             choices: roleRes,
                             name: "roleList",
-                            message: "What is this employee's role?"
+                            message: "What is this employee's role?",
                         },
                     ])
                     .then((answer) => {
@@ -227,29 +227,29 @@ const updateEmployee = () => {
 
                         const employeeMatch = employeeRes.find((employee) => {
                             return employee.name === answer.employeeList;
-                        })
+                        });
                         console.log(employeeMatch);
                         connection.query(
-                            "UPDATE employee set ? WHERE?"
+                            "UPDATE employee set ? WHERE ?",
                             [
                                 {
-                                    ROLE_ID: roleMatch.id
+                                    role_id: roleMatch.id,
                                 },
                                 {
-                                    ID: employeeMatch.ID
-                                }
-                            ], 
+                                    id: employeeMatch.id,
+                                },
+                            ],
                             (err, res) => {
                                 if (err) throw err;
                                 console.log(res);
-                                console.log("Done!")
-                                openingPrompts()
+                                console.log("Done!");
+                                openingPrompts();
                             }
-                        )
-                    })
-            })
+                        );
+                    });
+            });
         }
-    )
+    );
 };
 
 openingPrompts()
