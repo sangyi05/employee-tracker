@@ -52,7 +52,6 @@ const viewDepartments = () => {
         console.log("\n");
         console.table(res);
     });
-
     openingPrompts();
 };
 
@@ -77,3 +76,67 @@ const viewEmployees = () => {
     );
     openingPrompts();
 };
+
+const addDepartment = () => {
+    return inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "name",
+                message: "What is the name of the department?",
+            },
+        ])
+        .then((anser) => {
+            connection.query(
+                "INSERT INTO department set ?",
+                { name: answer.name },
+                (err, res) => {
+                    console.log("Done!");
+                    openingPrompts()
+                }
+            )
+        })
+};
+
+const addRole = () => {
+    connection.query("SELECT * FROM department", (err, res) => {
+        inquirer
+            .prompt([
+                {
+                    type: "input",
+                    name: "name",
+                    message: "What is the name of the role?"
+                },
+                {
+                    type: "input",
+                    name: "salary",
+                    message: "How much is the salary for this role?"
+                },
+                {
+                    type: "list",
+                    choices: res, 
+                    name: "department",
+                    message: "What department does this role belong in?"
+                }
+            ])
+            .then((answers) => {
+                const match = res.find((department) => {
+                    return department.name ===answer.department;
+                });
+                connection.query(
+                    "INSERT INTO role set ?",
+                    {
+                        title: answer.name,
+                        salary: answer.salary,
+                        department_id: match.id
+                    },
+                    (err, res) => {
+                        if (err) throw err;
+                        console.log(res)
+                        console.log("Done!");
+                        openingPrompts()
+                    }
+                )
+            })
+    })
+}
