@@ -55,3 +55,25 @@ const viewDepartments = () => {
 
     openingPrompts();
 };
+
+const viewRoles = () => {
+    connection.query(
+        "SELECT role.title, role.id AS role_id,role.salary, department.name AS department FROM role JOIN department ON (role.department_id = department.id)",
+        (err, res) => {
+            console.log("\n");
+            console.table(res);
+        }
+    );
+    openingPrompts();
+};
+
+const viewEmployees = () => {
+    connection.query(
+        "SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e.last_name AS manager FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS e ON employee.manager_id = e.id",
+        (err, res) => {
+            console.log("\n");
+            console.table(res);
+        }
+    );
+    openingPrompts();
+};
