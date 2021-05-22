@@ -211,7 +211,7 @@ const updateEmployee = () => {
                             type: "list",
                             choices: employeeRes,
                             name: "employeeList",
-                            message: "Select the employee you would like to update?",
+                            message: "Which employee would you like to update?",
                         },
                         {
                             type: "list",
