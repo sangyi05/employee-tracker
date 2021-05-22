@@ -26,4 +26,32 @@ const openingPrompts = () => {
                 ],
             },
         ])
-}
+        .then((openingAnswer) => {
+            if (openingAnswer.task === "View all departments") {
+                viewDepartments();
+            } else if (openingAnswer.task === "View all roles") {
+                viewRoles();
+            } else if (openingAnswer.task === "View all employees") {
+                viewEmployees();
+            } else if (openingAnswer.task === "Add a department") {
+                addDepartment();
+            } else if (openingAnswer.task === "Add a role") {
+                addRole();
+            } else if (openingAnswer.task === "Add an employee") {
+                addEmployee();
+            } else if (openingAnswer.task === "Update an employee's role") {
+                updateEmployee();
+            } else if (openingAnswer.task === "Finished!") {
+                connection.end();
+            }
+        });
+};
+
+const viewDepartments = () => {
+    connection.query("SELECT * FROM department", (err, res) => {
+        console.log("\n");
+        console.table(res);
+    });
+
+    openingPrompts();
+};
